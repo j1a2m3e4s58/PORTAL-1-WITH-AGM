@@ -1,13 +1,16 @@
 import { UserRole } from "@/backend";
-import { AgmYearSwitcher } from "@/components/AgmYearSwitcher";
+import { AnimatedAgmMark } from "@/components/AnimatedAgmMark";
 import { SyncStatus } from "@/components/SyncStatus";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useSettings } from "@/hooks/use-backend";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
+  ChevronLeft,
+  ChevronRight,
   ClipboardList,
   FileBarChart2,
   LayoutDashboard,
@@ -21,7 +24,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const BRAND_LOGO = "/assets/images/bcb-logo.png";
+const SIDEBAR_COLLAPSED_KEY = "agm-sidebar-collapsed";
 
 const NAV_ITEMS = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -84,7 +87,49 @@ const ROLE_LABEL: Record<string, string> = {
   Viewer: "Viewer",
 };
 
+function NavItem({
+  item,
+  collapsed,
+  onClick,
+}: {
+  item: (typeof NAV_ITEMS)[0];
+  collapsed: boolean;
+  onClick?: () => void;
+}) {
+  const location = useLocation();
+  const isActive =
+    location.pathname === item.path ||
+    (item.path !== "/" && location.pathname.startsWith(item.path));
+  const Icon = item.icon;
+
+  return (
+    <Link
+      to={item.path}
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-3 px-3 min-h-[44px] font-medium text-sm surface-highlight chamfer-sm transition-smooth",
+        collapsed ? "justify-center" : "",
+        isActive
+          ? "bg-primary/20 text-primary border border-primary/30"
+          : "text-foreground/70 hover:bg-muted hover:text-foreground border border-transparent",
+      )}
+      data-ocid={`nav.${item.label.toLowerCase().replace(/ /g, "-")}.link`}
+      aria-label={collapsed ? item.label : undefined}
+      title={collapsed ? item.label : undefined}
+    >
+      <Icon
+        className={cn("flex-shrink-0", collapsed ? "w-5 h-5" : "w-4 h-4")}
+      />
+      {!collapsed && <span className="truncate">{item.label}</span>}
+    </Link>
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "true";
+  });
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuth();
   const { data: settings } = useSettings();
@@ -98,232 +143,182 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
-    if (!mobileOpen) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMobileOpen(false);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [mobileOpen]);
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(
+      SIDEBAR_COLLAPSED_KEY,
+      collapsed ? "true" : "false",
+    );
+  }, [collapsed]);
 
-  const isActive = (path: string) =>
-    location.pathname === path ||
-    (path !== "/" && location.pathname.startsWith(path));
+  const sidebarContent = (
+    <>
+      <div
+        className={cn(
+          "surface-highlight sea-shell flex items-center gap-3 px-3 py-4 border-b border-border/50",
+          collapsed ? "justify-center" : "",
+        )}
+      >
+        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+          <AnimatedAgmMark
+            size={32}
+            animate={false}
+            className="border-none bg-transparent shadow-none"
+            label="AGM logo"
+          />
+        </div>
+        {!collapsed && (
+          <div className="min-w-0">
+            <p className="font-display font-semibold text-sm text-foreground truncate">
+              {settings?.agmName ?? "AGM Pro"}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {settings?.agmDate ?? "Annual General Meeting"}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <nav className="flex-1 px-2 py-4 flex flex-col gap-1 overflow-y-auto">
+        {visibleItems.map((item) => (
+          <NavItem
+            key={item.path}
+            item={item}
+            collapsed={collapsed}
+            onClick={() => setMobileOpen(false)}
+          />
+        ))}
+      </nav>
+
+      <div
+        className={cn(
+          "border-t border-border/50 p-2",
+          collapsed ? "flex flex-col items-center gap-2" : "",
+        )}
+      >
+        {!collapsed && user && (
+          <div className="px-3 py-2 mb-1">
+            <p className="text-sm font-medium text-foreground truncate">
+              {user.username}
+            </p>
+            <Badge variant="secondary" className="mt-1 text-xs">
+              {ROLE_LABEL[user.role] ?? user.role}
+            </Badge>
+          </div>
+        )}
+        <Button
+          variant="ghost"
+          size={collapsed ? "icon" : "sm"}
+          onClick={logout}
+          className={cn(
+            "surface-highlight text-muted-foreground hover:text-destructive hover:bg-destructive/10 min-h-[44px] w-full",
+            collapsed ? "" : "justify-start gap-2 px-3",
+          )}
+          data-ocid="nav.logout_button"
+          aria-label="Logout"
+        >
+          <LogOut className="w-4 h-4 flex-shrink-0" />
+          {!collapsed && "Logout"}
+        </Button>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setCollapsed((c) => !c)}
+        className="hidden lg:flex items-center justify-center absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-card border border-border shadow-sm hover:bg-muted z-10 chamfer-sm"
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
+        {collapsed ? (
+          <ChevronRight className="w-3 h-3" />
+        ) : (
+          <ChevronLeft className="w-3 h-3" />
+        )}
+      </button>
+    </>
+  );
 
   return (
-    <div className="app-shell-surface min-h-screen">
+    <div className="flex h-screen bg-transparent overflow-hidden">
+      <aside
+        className={cn(
+          "hidden lg:flex flex-col relative bg-card border-r border-border flex-shrink-0 shell-panel sea-shell sea-outline",
+          collapsed ? "w-16" : "w-56",
+        )}
+      >
+        {sidebarContent}
+      </aside>
+
       {mobileOpen && (
         <div
           role="button"
           tabIndex={0}
-          className="fixed inset-0 z-40 bg-foreground/30 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileOpen(false)}
           onKeyDown={(e) => e.key === "Escape" && setMobileOpen(false)}
           aria-label="Close menu"
         />
       )}
-
       <aside
         className={cn(
-          "fixed left-0 top-0 bottom-0 z-50 flex flex-col w-[92vw] max-w-80 glass-card-elevated border-r border-border/40 lg:hidden",
+          "fixed left-0 top-0 bottom-0 z-50 flex flex-col w-[92vw] max-w-80 bg-card border-r border-border lg:hidden shell-panel sea-shell sea-outline",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex items-center justify-between border-b border-border/30 px-4 py-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="h-12 w-12 overflow-hidden rounded-full border-2 border-primary/25 bg-white ring-2 ring-primary/10">
-              <img
-                src={BRAND_LOGO}
-                alt="Bawjiase Community Bank logo"
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="min-w-0">
-              <div className="font-display text-sm font-bold leading-tight text-foreground">
-                AGM Portal
-              </div>
-              <div className="truncate text-[10px] uppercase tracking-wider text-muted-foreground">
-                {settings?.agmName ?? "Annual General Meeting"}
-              </div>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileOpen(false)}
-            aria-label="Close menu"
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto px-2 py-3">
-          {visibleItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "mb-1 flex min-h-[44px] items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-smooth",
-                  isActive(item.path)
-                    ? "bg-primary/15 text-primary"
-                    : "text-foreground/70 hover:bg-muted/60 hover:text-foreground",
-                )}
-              >
-                <Icon className="h-4 w-4 flex-shrink-0" />
-                <span className="truncate">{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="border-t border-border/30 p-4 space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <ThemeToggle />
-            <SyncStatus />
-          </div>
-          <AgmYearSwitcher />
-          {user ? (
-            <div className="rounded-xl border border-border/40 bg-muted/35 px-3 py-3">
-              <div className="text-sm font-semibold text-foreground truncate">
-                {user.username}
-              </div>
-              <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-                {ROLE_LABEL[user.role] ?? user.role}
-              </div>
-            </div>
-          ) : null}
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={logout}
-            data-ocid="nav.logout_button"
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
-          </Button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setMobileOpen(false)}
+          className="absolute top-3 right-3 p-2 hover:bg-muted chamfer-sm"
+          aria-label="Close menu"
+        >
+          <X className="w-4 h-4" />
+        </button>
+        {sidebarContent}
       </aside>
 
-      <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-40 glass-card border-b border-border/30 lg:border-none lg:bg-transparent lg:backdrop-blur-0">
-          <div className="flex min-h-14 items-center justify-between gap-2 px-3 sm:px-4 lg:hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header className="shell-panel sea-shell sea-outline surface-highlight flex items-center justify-between px-3 sm:px-4 min-h-14 bg-card border-b border-border flex-shrink-0 gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-muted/60"
+              className="lg:hidden p-2 hover:bg-muted min-h-[44px] min-w-[44px] flex items-center justify-center chamfer-sm"
               aria-label="Open menu"
               data-ocid="nav.mobile_menu_button"
             >
               <Menu className="w-5 h-5" />
             </button>
-
-            <div className="min-w-0 flex-1">
-              <div className="truncate font-display text-sm font-semibold text-foreground">
-                AGM Portal
-              </div>
-              <div className="truncate text-[10px] uppercase tracking-wider text-muted-foreground">
-                {settings?.agmName ?? "Annual General Meeting"}
-              </div>
-            </div>
-
-            <ThemeToggle />
+            <p className="font-display font-semibold text-foreground text-sm truncate max-w-[38vw] sm:max-w-[48vw] lg:max-w-none">
+              {settings?.agmName ?? "AGM Pro"}
+            </p>
           </div>
-
-          <div className="hidden lg:block px-4 pt-4">
-            <div className="glass-card-elevated rounded-2xl border border-border/40 px-4 py-3">
-              <div className="flex items-center gap-3">
-                <Link to="/" className="flex w-[240px] shrink-0 items-center gap-3">
-                  <div className="h-12 w-12 overflow-hidden rounded-full border-2 border-primary/25 bg-white ring-2 ring-primary/10">
-                    <img
-                      src={BRAND_LOGO}
-                      alt="Bawjiase Community Bank logo"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-display text-sm font-bold leading-tight text-foreground">
-                      AGM PORTAL
-                    </div>
-                    <div className="truncate text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {settings?.agmName ?? "Annual General Meeting"}
-                    </div>
-                  </div>
-                </Link>
-
-                <nav className="flex min-w-0 flex-1 items-center justify-center gap-1 overflow-x-auto px-2">
-                  {visibleItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.path}
-                        to={item.path}
-                        className={cn(
-                          "inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg px-3 text-[12px] font-semibold whitespace-nowrap transition-smooth xl:text-sm",
-                          isActive(item.path)
-                            ? "bg-primary/15 text-primary"
-                            : "text-foreground/70 hover:bg-muted/60 hover:text-foreground",
-                        )}
-                        data-ocid={`topnav.${item.label.toLowerCase().replace(/\s+/g, "_")}.link`}
-                      >
-                        <Icon className="h-4 w-4 shrink-0" />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </nav>
-
-                <div className="flex w-[300px] shrink-0 items-center justify-end gap-2">
-                  <div className="max-w-[120px] shrink-0">
-                    <AgmYearSwitcher />
-                  </div>
-                  <SyncStatus />
-                  <ThemeToggle />
-                  {user ? (
-                    <div className="flex items-center gap-2 rounded-full border border-border/40 bg-muted/30 py-1.5 pl-1.5 pr-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-xs font-bold text-primary">
-                        {user.username.slice(0, 2).toUpperCase()}
-                      </div>
-                      <div className="min-w-0 text-left">
-                        <div className="max-w-[84px] truncate text-xs font-bold text-foreground">
-                          {user.username}
-                        </div>
-                        <div className="text-[10px] uppercase text-muted-foreground">
-                          {ROLE_LABEL[user.role] ?? user.role}
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-destructive"
-                    onClick={logout}
-                    data-ocid="desktop.logout_button"
-                    aria-label="Logout"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </Button>
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            <ThemeToggle />
+            <SyncStatus />
+            {user && (
+              <div className="hidden md:flex items-center gap-2">
+                <div className="w-7 h-7 bg-primary/20 border border-primary/30 flex items-center justify-center chamfer-sm">
+                  <span className="text-xs font-semibold text-primary">
+                    {user.username.slice(0, 1).toUpperCase()}
+                  </span>
                 </div>
+                <span className="text-sm text-muted-foreground truncate max-w-[120px]">
+                  {user.username}
+                </span>
+                <Badge variant="secondary" className="text-xs">
+                  {ROLE_LABEL[user.role] ?? user.role}
+                </Badge>
               </div>
-            </div>
+            )}
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-3 pb-24 sm:p-4 sm:pb-24 lg:p-6">
-          <div className="mb-3 lg:hidden">
-            <AgmYearSwitcher />
-          </div>
+        <main className="flex-1 overflow-y-auto bg-background p-3 pb-24 sm:p-4 sm:pb-24 lg:p-6 lg:pb-6">
           {children}
         </main>
 
         {mobileQuickItems.length > 0 && (
           <nav className="fixed inset-x-0 bottom-0 z-40 lg:hidden">
             <div
-              className="glass-card-elevated grid gap-1 border-t border-border/70 bg-card/95 px-2 py-2 backdrop-blur-xl"
+              className="sea-shell sea-outline grid gap-1 border-t border-border/70 bg-card/95 px-2 py-2 shadow-[0_-12px_32px_rgba(4,8,20,0.16)] backdrop-blur-xl dark:bg-[rgba(12,14,22,0.92)] dark:shadow-[0_-12px_32px_rgba(4,8,20,0.28)]"
               style={{
                 gridTemplateColumns: `repeat(${mobileQuickItems.length}, minmax(0, 1fr))`,
               }}
@@ -341,8 +336,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     className={cn(
                       "flex min-h-[60px] flex-col items-center justify-center gap-1.5 border px-1 pt-1 pb-1.5 text-center",
                       isActive
-                        ? "border-primary/35 bg-primary text-primary-foreground shadow-[0_10px_24px_rgba(58,110,255,0.26)]"
-                        : "border-transparent bg-transparent text-foreground/68",
+                        ? "border-primary/35 bg-primary/95 text-primary-foreground shadow-[0_10px_24px_rgba(58,110,255,0.26)]"
+                        : "border-transparent bg-transparent text-foreground/62 dark:text-foreground/72",
                     )}
                     data-ocid={`mobile.nav.${item.label.toLowerCase().replace(/ /g, "-")}.link`}
                   >
@@ -351,7 +346,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         "flex h-8 w-8 items-center justify-center border",
                         isActive
                           ? "border-primary-foreground/18 bg-primary-foreground/10"
-                          : "border-border/55 bg-background/45",
+                          : "border-border/55 bg-background/45 dark:bg-white/[0.03]",
                       )}
                     >
                       <Icon className="h-4 w-4" />
@@ -361,7 +356,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         "font-display text-[10px] font-semibold uppercase tracking-[0.22em] leading-none",
                         isActive
                           ? "text-primary-foreground"
-                          : "text-foreground/68",
+                          : "text-foreground/68 dark:text-foreground/76",
                       )}
                     >
                       {item.label === "Registration"
