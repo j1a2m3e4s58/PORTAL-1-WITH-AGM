@@ -29,8 +29,17 @@ export interface AuthContextValue {
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
 const SESSION_VALIDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
+const PORTAL_ACTIVITY_KEY = "bcb_last_activity";
 const cachedUserAtBoot = storage.getUser<AppUser>();
 const cachedSessionTokenAtBoot = storage.getSessionToken();
+
+function markPortalActivity(timestamp = Date.now()) {
+  try {
+    window.localStorage.setItem(PORTAL_ACTIVITY_KEY, String(timestamp));
+  } catch {
+    // Ignore storage failures to keep the AGM session usable.
+  }
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(cachedUserAtBoot);
@@ -144,6 +153,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!user || !sessionToken) return;
+
+    const updateActivity = () => {
+      markPortalActivity(Date.now());
+    };
+
+    updateActivity();
+    window.addEventListener("mousemove", updateActivity);
+    window.addEventListener("mousedown", updateActivity);
+    window.addEventListener("keydown", updateActivity);
+    window.addEventListener("touchstart", updateActivity);
+    window.addEventListener("scroll", updateActivity, { passive: true });
+    window.addEventListener("focus", updateActivity);
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        updateActivity();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      window.removeEventListener("mousemove", updateActivity);
+      window.removeEventListener("mousedown", updateActivity);
+      window.removeEventListener("keydown", updateActivity);
+      window.removeEventListener("touchstart", updateActivity);
+      window.removeEventListener("scroll", updateActivity);
+      window.removeEventListener("focus", updateActivity);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [sessionToken, user]);
+
   const login = useCallback(
     async (
       username: string,
@@ -156,6 +199,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!resolvedActor) throw new Error("Backend not ready");
       const client = buildClient(resolvedActor);
       const response = await client.login(username, password);
+      markPortalActivity(Date.now());
       storage.setSessionToken(response.token);
       setSessionToken(response.token);
       setMustChangePassword(response.mustChangePassword);
