@@ -13,6 +13,8 @@ import { Eye, EyeOff, KeyRound, Lock, User } from "lucide-react";
 import { useState } from "react";
 
 type Mode = "login" | "reset";
+const BRAND_LOGO = "/assets/images/bcb-logo.png";
+const AUTH_BG = "/assets/images/auth-bg.jpg";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<Mode>("login");
@@ -126,40 +128,48 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 overflow-hidden pointer-events-none"
-        aria-hidden
-      >
-        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-accent/5 blur-3xl" />
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <img
+          src={AUTH_BG}
+          alt=""
+          className="h-full w-full scale-105 object-cover blur-[5px]"
+        />
+        <div className="absolute inset-0 bg-background/45 dark:bg-background/65" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-background/10 to-secondary/15" />
       </div>
 
-      <div className="relative w-full max-w-sm">
-        <div className="mb-6 text-center sm:mb-8">
-          <AnimatedAgmMark
-            size={72}
-            className="mx-auto mb-4"
-            label="AGM installable app logo"
-          />
-          <h1 className="font-display text-2xl font-bold text-foreground">
-            AGM Pro
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Secure Annual General Meeting workspace
-          </p>
-        </div>
+      <div className="relative flex min-h-screen items-center justify-center px-4 py-8">
+        <div className="relative mt-12 w-full max-w-sm rounded-2xl glass-card-elevated px-5 pb-6 pt-20 shadow-glass-dark sm:px-6">
+          <div className="absolute -top-12 left-1/2 -translate-x-1/2">
+            <div className="flex flex-col items-center" data-ocid="auth.bcb_badge">
+              <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-background bg-background shadow-glass ring-4 ring-primary/20">
+                <img
+                  src={BRAND_LOGO}
+                  alt="Bawjiase Community Bank logo"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
 
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-elevated sm:p-6">
+          <div className="mb-10 space-y-1 text-center">
+            <h1 className="font-display text-2xl font-bold text-foreground">
+              AGM Portal
+            </h1>
+            <p className="text-sm text-muted-foreground">Secure Access</p>
+          </div>
+
           {mode === "login" ? (
             <form onSubmit={handleLogin} noValidate>
-              <h2 className="mb-5 font-display font-semibold text-foreground">
-                Sign In
-              </h2>
-
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="username">Username</Label>
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="username"
+                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                  >
+                    Username
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -169,15 +179,20 @@ export default function LoginPage() {
                       placeholder="Enter username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="min-h-[44px] pl-9 glass-input"
+                      className="h-12 rounded-xl glass-input pl-9 text-base"
                       data-ocid="login.username.input"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="password">Password</Label>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="password"
+                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                  >
+                    Password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -187,7 +202,7 @@ export default function LoginPage() {
                       placeholder="Enter password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="min-h-[44px] pl-9 pr-10 glass-input"
+                      className="h-12 rounded-xl glass-input pl-9 pr-10 text-base"
                       data-ocid="login.password.input"
                       required
                     />
@@ -211,11 +226,11 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="mt-5 min-h-[44px] w-full font-semibold glass-button"
+                className="mt-5 h-12 w-full rounded-xl glass-button text-sm font-bold uppercase tracking-wide"
                 disabled={isSubmitting || !username || !password}
                 data-ocid="login.submit_button"
               >
-                {isSubmitting ? "Signing in..." : "Sign In"}
+                {isSubmitting ? "Signing in..." : "Secure Login"}
               </Button>
 
               <button
@@ -242,9 +257,14 @@ export default function LoginPage() {
                 </h2>
               </div>
 
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="reset-username">Username</Label>
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="reset-username"
+                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                  >
+                    Username
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -253,15 +273,20 @@ export default function LoginPage() {
                       placeholder="Enter username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="min-h-[44px] pl-9 glass-input"
+                      className="h-12 rounded-xl glass-input pl-9 text-base"
                       data-ocid="login.reset_username.input"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="reset-code">Reset Code</Label>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="reset-code"
+                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                  >
+                    Reset Code
+                  </Label>
                   <div className="relative">
                     <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -270,7 +295,7 @@ export default function LoginPage() {
                       placeholder="Enter reset code"
                       value={resetCode}
                       onChange={(e) => setResetCode(e.target.value)}
-                      className="min-h-[44px] pl-9 glass-input"
+                      className="h-12 rounded-xl glass-input pl-9 text-base"
                       data-ocid="login.reset_code.input"
                       required
                     />
@@ -280,8 +305,13 @@ export default function LoginPage() {
                   </p>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="new-password">New Password</Label>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="new-password"
+                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                  >
+                    New Password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -290,7 +320,7 @@ export default function LoginPage() {
                       placeholder="At least 10 characters with letters and numbers"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="min-h-[44px] pl-9 pr-10 glass-input"
+                      className="h-12 rounded-xl glass-input pl-9 pr-10 text-base"
                       data-ocid="login.new_password.input"
                       required
                     />
@@ -318,7 +348,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="mt-5 min-h-[44px] w-full font-semibold glass-button"
+                className="mt-5 h-12 w-full rounded-xl glass-button text-sm font-bold uppercase tracking-wide"
                 disabled={isSubmitting || !username || !resetCode || !newPassword}
                 data-ocid="login.reset_submit_button"
               >
@@ -327,13 +357,19 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="mt-3 min-h-[44px] w-full"
+                className="mt-3 h-12 w-full rounded-xl"
                 onClick={() => setMode("login")}
               >
                 Return to Login
               </Button>
             </form>
           )}
+
+          <div className="mt-3 border-border border-t pt-5 text-center">
+            <p className="text-xs text-muted-foreground">
+              Authorized Access Only
+            </p>
+          </div>
         </div>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
