@@ -21,7 +21,6 @@ import {
   Bell,
   BookOpen,
   ChevronRight,
-  ClipboardList,
   Download,
   ExternalLink,
   FileText,
@@ -40,7 +39,7 @@ import type { ReactNode } from "react";
 import type { User as PortalUser } from "@/types";
 
 const BRAND_LOGO = withBase("assets/images/bcb-logo.png");
-const AGM_PORTAL_URL = withBase("connected-sites/agm/index.html");
+const AGM_PORTAL_URL = withBase("connected-sites/agm/");
 
 // ── Nav Config ─────────────────────────────────────────────────────────────────
 
@@ -92,12 +91,6 @@ const NAV_ITEMS: NavItem[] = [
     to: "/support",
     label: "IT Support",
     icon: <HeadphonesIcon className="h-5 w-5" />,
-  },
-  {
-    to: "/audit",
-    label: "Audit Logs",
-    icon: <ClipboardList className="h-5 w-5" />,
-    departments: ["IT"],
   },
   {
     to: "/backup",
@@ -594,19 +587,13 @@ function DesktopTopNav() {
       label: "Handbook",
       icon: <BookOpen className="h-4 w-4" />,
     },
-    {
-      to: "/audit",
-      label: "Audit Logs",
-      icon: <ClipboardList className="h-4 w-4" />,
-      departments: ["IT"],
-    },
   ];
   const visibleItems = topNavItems.filter((item) => canSeeNavItem(user, item));
 
   return (
     <header className="sticky top-4 z-40 mx-4 mt-4 glass-card-elevated rounded-2xl border border-border/40 px-4 py-3">
       <div className="flex items-center gap-3">
-        <Link to="/" className="flex items-center gap-3 w-[220px] shrink-0">
+        <Link to="/" className="flex items-center gap-3 w-[200px] xl:w-[220px] shrink-0">
           <BCBBadge size="md" />
           <div className="min-w-0">
             <div className="font-display font-bold text-sm text-foreground leading-tight">
@@ -618,7 +605,7 @@ function DesktopTopNav() {
           </div>
         </Link>
 
-        <nav className="flex-1 min-w-0 flex items-center justify-center gap-1">
+        <nav className="flex-1 min-w-0 flex items-center justify-start xl:justify-center gap-1 overflow-x-auto pr-2">
           {visibleItems.map((item) => {
             const isActive =
               item.to === "/"
@@ -629,7 +616,7 @@ function DesktopTopNav() {
                 key={`${item.to}-${item.label}`}
                 to={item.to}
                 className={cn(
-                  "inline-flex items-center justify-center gap-2 min-h-11 px-2 xl:px-3 rounded-lg text-[12px] xl:text-sm font-semibold whitespace-nowrap transition-smooth",
+                  "inline-flex items-center justify-center gap-2 min-h-11 px-2 lg:px-2 xl:px-3 rounded-lg text-[11px] xl:text-sm font-semibold whitespace-nowrap transition-smooth shrink-0",
                   isActive
                     ? "bg-primary/15 text-primary"
                     : "text-foreground/70 hover:bg-muted/60 hover:text-foreground",
@@ -647,7 +634,7 @@ function DesktopTopNav() {
             href={AGM_PORTAL_URL}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 min-h-11 px-2 xl:px-3 rounded-lg text-[12px] xl:text-sm font-semibold whitespace-nowrap transition-smooth text-foreground/70 hover:bg-muted/60 hover:text-foreground"
+            className="inline-flex items-center justify-center gap-2 min-h-11 px-2 lg:px-2 xl:px-3 rounded-lg text-[11px] xl:text-sm font-semibold whitespace-nowrap transition-smooth text-foreground/70 hover:bg-muted/60 hover:text-foreground shrink-0"
             data-ocid="topnav.agm_portal.link"
           >
             <span className="h-4 w-4 shrink-0 flex items-center justify-center">
@@ -657,7 +644,7 @@ function DesktopTopNav() {
           </a>
         </nav>
 
-        <div className="flex items-center gap-2 w-[190px] shrink-0 justify-end">
+        <div className="flex items-center gap-2 w-[170px] xl:w-[190px] shrink-0 justify-end">
           <NotificationBell />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
