@@ -29,8 +29,8 @@ services:
     name: agm-pro-backend
     runtime: node
     rootDir: connected-sites/agm-pro-main
-    buildCommand: corepack enable && corepack pnpm install --frozen-lockfile && corepack pnpm build:shared-backend
-    startCommand: corepack pnpm shared:backend
+    buildCommand: npx pnpm@10.11.1 install --frozen-lockfile && npx pnpm@10.11.1 build:shared-backend
+    startCommand: npx pnpm@10.11.1 shared:backend
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
@@ -44,9 +44,11 @@ services:
     name: bawjiase-staff-preview
     runtime: static
     rootDir: src/frontend
-    buildCommand: corepack enable && corepack pnpm install --frozen-lockfile && corepack pnpm build
+    buildCommand: npx pnpm@10.11.1 install --frozen-lockfile && npx pnpm@10.11.1 build
     staticPublishPath: dist
     envVars:
+      - key: NODE_VERSION
+        value: 20.19.0
       - key: VITE_MAIL_API_URL
         value: https://bawjiase-staff-api.onrender.com/api
       - key: HUSKY
