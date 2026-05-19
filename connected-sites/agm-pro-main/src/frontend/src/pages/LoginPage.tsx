@@ -140,249 +140,256 @@ export default function LoginPage() {
       </div>
 
       <div className="relative flex min-h-screen items-center justify-center px-4 py-8">
-        <div className="relative mt-12 w-full max-w-sm rounded-2xl glass-card-elevated px-5 pb-6 pt-20 shadow-glass-dark sm:px-6">
-          <div className="absolute -top-12 left-1/2 -translate-x-1/2">
-            <div className="flex flex-col items-center" data-ocid="auth.bcb_badge">
-              <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-background bg-background shadow-glass ring-4 ring-primary/20">
-                <img
-                  src={BRAND_LOGO}
-                  alt="Bawjiase Community Bank logo"
-                  className="h-full w-full object-cover"
-                />
+        <div className="flex w-full flex-col items-center justify-center">
+          <div className="relative mt-12 w-full max-w-sm rounded-2xl glass-card-elevated px-5 pb-6 pt-20 shadow-glass-dark sm:px-6">
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2">
+              <div
+                className="flex flex-col items-center"
+                data-ocid="auth.bcb_badge"
+              >
+                <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-background bg-background shadow-glass ring-4 ring-primary/20">
+                  <img
+                    src={BRAND_LOGO}
+                    alt="Bawjiase Community Bank logo"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="mb-10 space-y-1 text-center">
-            <h1 className="font-display text-2xl font-bold text-foreground">
-              AGM Portal
-            </h1>
-            <p className="text-sm text-muted-foreground">Secure Access</p>
-          </div>
+            <div className="mb-10 space-y-1 text-center">
+              <h1 className="font-display text-2xl font-bold text-foreground">
+                AGM Portal
+              </h1>
+              <p className="text-sm text-muted-foreground">Secure Access</p>
+            </div>
 
-          {mode === "login" ? (
-            <form onSubmit={handleLogin} noValidate>
-              <div className="space-y-5">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="username"
-                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
-                  >
-                    Username
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="username"
-                      type="text"
-                      autoComplete="username"
-                      placeholder="Enter username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="h-12 rounded-xl glass-input pl-9 text-base"
-                      data-ocid="login.username.input"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="password"
-                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
-                  >
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      autoComplete="current-password"
-                      placeholder="Enter password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="h-12 rounded-xl glass-input pl-9 pr-10 text-base"
-                      data-ocid="login.password.input"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((s) => !s)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      aria-label={
-                        showPassword ? "Hide password" : "Show password"
-                      }
+            {mode === "login" ? (
+              <form onSubmit={handleLogin} noValidate>
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="username"
+                      className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
+                      Username
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="username"
+                        type="text"
+                        autoComplete="username"
+                        placeholder="Enter username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="h-12 rounded-xl glass-input pl-9 text-base"
+                        data-ocid="login.username.input"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="password"
+                      className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="current-password"
+                        placeholder="Enter password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="h-12 rounded-xl glass-input pl-9 pr-10 text-base"
+                        data-ocid="login.password.input"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((s) => !s)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <Button
-                type="submit"
-                className="mt-5 h-12 w-full rounded-xl glass-button text-sm font-bold uppercase tracking-wide"
-                disabled={isSubmitting || !username || !password}
-                data-ocid="login.submit_button"
-              >
-                {isSubmitting ? "Signing in..." : "Secure Login"}
-              </Button>
+                <Button
+                  type="submit"
+                  className="mt-5 h-12 w-full rounded-xl glass-button text-sm font-bold uppercase tracking-wide"
+                  disabled={isSubmitting || !username || !password}
+                  data-ocid="login.submit_button"
+                >
+                  {isSubmitting ? "Signing in..." : "Secure Login"}
+                </Button>
 
-              <button
-                type="button"
-                onClick={() => setMode("reset")}
-                className="mt-3 w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground"
-                data-ocid="login.forgot_password.link"
-              >
-                Forgot password?
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleReset} noValidate>
-              <div className="mb-5 flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setMode("login")}
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  onClick={() => setMode("reset")}
+                  className="mt-3 w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  data-ocid="login.forgot_password.link"
                 >
-                  Back
+                  Forgot password?
                 </button>
-                <h2 className="font-display font-semibold text-foreground">
-                  Reset Password
-                </h2>
-              </div>
-
-              <div className="space-y-5">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="reset-username"
-                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+              </form>
+            ) : (
+              <form onSubmit={handleReset} noValidate>
+                <div className="mb-5 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setMode("login")}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    Username
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="reset-username"
-                      type="text"
-                      placeholder="Enter username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="h-12 rounded-xl glass-input pl-9 text-base"
-                      data-ocid="login.reset_username.input"
-                      required
-                    />
-                  </div>
+                    Back
+                  </button>
+                  <h2 className="font-display font-semibold text-foreground">
+                    Reset Password
+                  </h2>
                 </div>
 
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="reset-code"
-                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
-                  >
-                    Reset Code
-                  </Label>
-                  <div className="relative">
-                    <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="reset-code"
-                      type="text"
-                      placeholder="Enter reset code"
-                      value={resetCode}
-                      onChange={(e) => setResetCode(e.target.value)}
-                      className="h-12 rounded-xl glass-input pl-9 text-base"
-                      data-ocid="login.reset_code.input"
-                      required
-                    />
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="reset-username"
+                      className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                      Username
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="reset-username"
+                        type="text"
+                        placeholder="Enter username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="h-12 rounded-xl glass-input pl-9 text-base"
+                        data-ocid="login.reset_username.input"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="reset-code"
+                      className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                      Reset Code
+                    </Label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="reset-code"
+                        type="text"
+                        placeholder="Enter reset code"
+                        value={resetCode}
+                        onChange={(e) => setResetCode(e.target.value)}
+                        className="h-12 rounded-xl glass-input pl-9 text-base"
+                        data-ocid="login.reset_code.input"
+                        required
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Contact your administrator for the reset code.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="new-password"
+                      className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                      New Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="new-password"
+                        type={showNewPassword ? "text" : "password"}
+                        placeholder="At least 10 characters with letters and numbers"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="h-12 rounded-xl glass-input pl-9 pr-10 text-base"
+                        data-ocid="login.new_password.input"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword((s) => !s)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={
+                          showNewPassword ? "Hide password" : "Show password"
+                        }
+                      >
+                        {showNewPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Contact your administrator for the reset code.
+                    New passwords must be at least 10 characters and include
+                    both letters and numbers.
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="new-password"
-                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
-                  >
-                    New Password
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="new-password"
-                      type={showNewPassword ? "text" : "password"}
-                      placeholder="At least 10 characters with letters and numbers"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="h-12 rounded-xl glass-input pl-9 pr-10 text-base"
-                      data-ocid="login.new_password.input"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPassword((s) => !s)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      aria-label={
-                        showNewPassword ? "Hide password" : "Show password"
-                      }
-                    >
-                      {showNewPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  New passwords must be at least 10 characters and include both
-                  letters and numbers.
-                </p>
-              </div>
+                <Button
+                  type="submit"
+                  className="mt-5 h-12 w-full rounded-xl glass-button text-sm font-bold uppercase tracking-wide"
+                  disabled={
+                    isSubmitting || !username || !resetCode || !newPassword
+                  }
+                  data-ocid="login.reset_submit_button"
+                >
+                  {isSubmitting ? "Resetting..." : "Reset Password"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-3 h-12 w-full rounded-xl"
+                  onClick={() => setMode("login")}
+                >
+                  Return to Login
+                </Button>
+              </form>
+            )}
 
-              <Button
-                type="submit"
-                className="mt-5 h-12 w-full rounded-xl glass-button text-sm font-bold uppercase tracking-wide"
-                disabled={isSubmitting || !username || !resetCode || !newPassword}
-                data-ocid="login.reset_submit_button"
-              >
-                {isSubmitting ? "Resetting..." : "Reset Password"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-3 h-12 w-full rounded-xl"
-                onClick={() => setMode("login")}
-              >
-                Return to Login
-              </Button>
-            </form>
-          )}
-
-          <div className="mt-3 border-border border-t pt-5 text-center">
-            <p className="text-xs text-muted-foreground">
-              Authorized Access Only
-            </p>
+            <div className="mt-3 border-border border-t pt-5 text-center">
+              <p className="text-xs text-muted-foreground">
+                Authorized Access Only
+              </p>
+            </div>
           </div>
-        </div>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()}. Built with love using{" "}
-          <a
-            href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-foreground"
-          >
-            caffeine.ai
-          </a>
-        </p>
+          <p className="mt-6 text-center text-xs text-muted-foreground">
+            © {new Date().getFullYear()}. Built with love using{" "}
+            <a
+              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              caffeine.ai
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
