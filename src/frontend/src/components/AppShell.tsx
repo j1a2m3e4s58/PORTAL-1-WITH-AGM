@@ -23,6 +23,7 @@ import {
   ChevronRight,
   ClipboardList,
   Download,
+  ExternalLink,
   FileText,
   GraduationCap,
   HeadphonesIcon,
@@ -39,6 +40,7 @@ import type { ReactNode } from "react";
 import type { User as PortalUser } from "@/types";
 
 const BRAND_LOGO = withBase("assets/images/bcb-logo.png");
+const AGM_PORTAL_URL = withBase("connected-sites/agm/index.html");
 
 // ── Nav Config ─────────────────────────────────────────────────────────────────
 
@@ -433,6 +435,17 @@ function MobileDrawer({
               </Link>
             );
           })}
+          <a
+            href={AGM_PORTAL_URL}
+            target="_blank"
+            rel="noreferrer"
+            onClick={onClose}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-smooth text-foreground/70 hover:bg-muted/60 hover:text-foreground"
+            data-ocid="mobile_drawer.agm_portal.link"
+          >
+            <ExternalLink className="h-5 w-5" />
+            <span>AGM Portal</span>
+          </a>
         </nav>
         <Separator className="opacity-30" />
         <div className="p-4 space-y-2">
@@ -630,6 +643,18 @@ function DesktopTopNav() {
               </Link>
             );
           })}
+          <a
+            href={AGM_PORTAL_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center gap-2 min-h-11 px-2 xl:px-3 rounded-lg text-[12px] xl:text-sm font-semibold whitespace-nowrap transition-smooth text-foreground/70 hover:bg-muted/60 hover:text-foreground"
+            data-ocid="topnav.agm_portal.link"
+          >
+            <span className="h-4 w-4 shrink-0 flex items-center justify-center">
+              <ExternalLink className="h-4 w-4" />
+            </span>
+            <span>AGM Portal</span>
+          </a>
         </nav>
 
         <div className="flex items-center gap-2 w-[190px] shrink-0 justify-end">
